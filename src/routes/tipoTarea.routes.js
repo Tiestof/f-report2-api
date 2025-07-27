@@ -1,19 +1,26 @@
 // ===========================================================
-// Archivo: gastoReporte.routes.js
-// Descripción: Rutas para módulo de GastoReporte
+// Archivo: routes/tipoTarea.routes.js
+// Descripción: Rutas para el módulo TipoTarea
 // ===========================================================
 
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/gastoReporte.controller');
+const ctrl = require('../controllers/tipoTarea.controller');
 const verifyToken = require('../middleware/verifyToken');
 
-// Rutas protegidas por token (sin restricción de rol)
+// Ruta: GET /api/tipotareas → listar todos
 router.get('/', verifyToken([]), ctrl.getAll);
+
+// Ruta: GET /api/tipotareas/:id → obtener uno
 router.get('/:id', verifyToken([]), ctrl.getById);
-router.get('/reporte/:id_reporte', verifyToken([]), ctrl.getByReporte);
+
+// Ruta: POST /api/tipotareas → crear nuevo tipo de tarea
 router.post('/', verifyToken([]), ctrl.create);
+
+// Ruta: PUT /api/tipotareas/:id → actualizar tipo de tarea
 router.put('/:id', verifyToken([]), ctrl.update);
+
+// Ruta: DELETE /api/tipotareas/:id → eliminar tipo de tarea
 router.delete('/:id', verifyToken([]), ctrl.delete);
 
 module.exports = router;

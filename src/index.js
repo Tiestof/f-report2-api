@@ -58,4 +58,37 @@ app.use('/api/tipogastos', tipoGastoRoutes);
 const gastoReporteRoutes = require('./routes/gastoReporte.routes');
 app.use('/api/gastos', gastoReporteRoutes);
 
+// Rutas de centro costo
+const centroCostoRoutes = require('./routes/centroCosto.routes');
+app.use('/api/centrocostos', centroCostoRoutes);
+
+// Rutas de tipo evidencia
+const tipoEvidenciaRoutes = require('./routes/tipoEvidencia.routes');
+app.use('/api/tipoevidencias', tipoEvidenciaRoutes);
+
+// Rutas de Tipo tarea
+const tipoTareaRoutes = require('./routes/tipoTarea.routes');
+app.use('/api/tipotareas', tipoTareaRoutes);
+
+// Rutas de Tarea Reporte
+const tareasReporteRoutes = require('./routes/tareasReporte.routes');
+app.use('/api/tareas', tareasReporteRoutes);
+
+// Rutas de Reporte
+const reporteRoutes = require('./routes/reporte.routes');
+app.use('/api/reportes', reporteRoutes);
+
+// Rutas de Reporte
+const evidenciaReporteRoutes = require('./routes/evidenciaReporte.routes');
+app.use('/api/evidencias', evidenciaReporteRoutes);
+
+// Rutas de Auditoria
+const auditoriaRoutes = require('./routes/auditoria.routes');
+app.use('/api/auditoria', auditoriaRoutes);
+
+
+// Rutas para crear primero usuarios Comentar luego de esto por seguuridad
+const setupRoutes = require('./routes/setup.routes');
+app.use('/api/setup', setupRoutes);
+
 module.exports = app;
