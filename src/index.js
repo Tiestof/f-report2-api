@@ -87,8 +87,14 @@ const auditoriaRoutes = require('./routes/auditoria.routes');
 app.use('/api/auditoria', auditoriaRoutes);
 
 
+
+
 // Rutas para crear primero usuarios Comentar luego de esto por seguuridad
 const setupRoutes = require('./routes/setup.routes');
 app.use('/api/setup', setupRoutes);
+
+// Rutas de Dashboard
+const dashboardRoutes = require('./routes/dashboard.routes');
+app.use('/api/dashboard', dashboardRoutes);
 
 module.exports = app;
