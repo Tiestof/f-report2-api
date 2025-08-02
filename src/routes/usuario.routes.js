@@ -12,10 +12,10 @@ const verifyToken = require('../middleware/verifyToken');
 router.get('/perfil', verifyToken([]), ctrl.perfil);
 
 // Ruta: GET /api/usuarios → listado completo (solo supervisor)
-router.get('/', verifyToken([2]), ctrl.getAll);
+router.get('/', verifyToken([]), ctrl.getAll);
 
 // ✅ Ruta: GET /api/usuarios/:rut → obtener usuario específico (solo supervisor)
-router.get('/:rut', verifyToken([2]), ctrl.getByRut);
+router.get('/:rut', verifyToken([]), ctrl.getByRut);
 
 // Ruta: POST /api/usuarios → crear usuario (solo supervisor)
 router.post('/', verifyToken([2]), ctrl.create);
