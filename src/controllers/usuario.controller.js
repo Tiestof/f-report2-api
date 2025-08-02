@@ -27,6 +27,21 @@ const UsuarioController = {
     }
   },
 
+  // ✅ GET /api/usuarios/:rut → obtener usuario específico por RUT
+  async getByRut(req, res) {
+    try {
+      const rut = req.params.rut;
+      const usuario = await Usuario.getByRut(rut);
+      if (!usuario) {
+        return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+      }
+      res.json(usuario);
+    } catch (error) {
+      console.error('❌ Error al obtener usuario por RUT:', error.message);
+      res.status(500).json({ mensaje: 'Error al obtener usuario' });
+    }
+  },
+
   // POST /api/usuarios
   async create(req, res) {
     try {
