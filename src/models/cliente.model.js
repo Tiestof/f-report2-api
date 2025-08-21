@@ -1,46 +1,50 @@
 // ===========================================================
 // Archivo: models/cliente.model.js
 // Descripción: Acceso a BD para tabla Cliente
+// Nota: Se incorpora 'activado' en todas las operaciones.
 // ===========================================================
 
 const db = require('../config/db');
 
 const ClienteModel = {
-  // Obtener todos los clientes
   async getAll() {
-    const [rows] = await db.query('SELECT * FROM Cliente');
+    const [rows] = await db.query(
+      'SELECT rut_cliente, nombre_cliente, tipo_cliente, activado FROM Cliente ORDER BY nombre_cliente'
+    );
     return rows;
   },
 
-  // Obtener cliente por RUT
   async getById(rut_cliente) {
-    const [rows] = await db.query('SELECT * FROM Cliente WHERE rut_cliente = ?', [rut_cliente]);
+    const [rows] = await db.query(
+      'SELECT rut_cliente, nombre_cliente, tipo_cliente, activado FROM Cliente WHERE rut_cliente = ?',
+      [rut_cliente]
+    );
     return rows[0];
   },
 
-  // Crear cliente
   async create(data) {
-    const { rut_cliente, nombre_cliente, tipo_cliente } = data;
+    const { rut_cliente, nombre_cliente, tipo_cliente, activado } = data;
     await db.query(
-      'INSERT INTO Cliente (rut_cliente, nombre_cliente, tipo_cliente) VALUES (?, ?, ?)',
-      [rut_cliente, nombre_cliente, tipo_cliente]
+      'INSERT INTO Cliente (rut_cliente, nombre_cliente, tipo_cliente, activado) VALUES (?, ?, ?, COALESCE(?, 1))',
+      [rut_cliente, nombre_cliente, tipo_cliente, activado]
     );
     return rut_cliente;
   },
 
-  // Actualizar cliente
   async update(rut_cliente, data) {
-    const { nombre_cliente, tipo_cliente } = data;
+    const { nombre_cliente, tipo_cliente, activado } = data;
     const [result] = await db.query(
-      'UPDATE Cliente SET nombre_cliente = ?, tipo_cliente = ? WHERE rut_cliente = ?',
-      [nombre_cliente, tipo_cliente, rut_cliente]
+      'UPDATE Cliente SET nombre_cliente = COALESCE(?, nombre_cliente), tipo_cliente = COALESCE(?, tipo_cliente), activado = COALESCE(?, activado) WHERE rut_cliente = ?',
+      [nombre_cliente, tipo_cliente, activado, rut_cliente]
     );
     return result.affectedRows > 0;
   },
 
-  // Eliminar cliente
   async delete(rut_cliente) {
-    const [result] = await db.query('DELETE FROM Cliente WHERE rut_cliente = ?', [rut_cliente]);
+    const [result] = await db.query(
+      'DELETE FROM Cliente WHERE rut_cliente = ?',
+      [rut_cliente]
+    );
     return result.affectedRows > 0;
   }
 };

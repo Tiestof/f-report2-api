@@ -1,44 +1,45 @@
 // ===========================================================
 // Archivo: models/tipoServicio.model.js
 // Descripción: Acceso a BD para tabla TipoServicio
+// Nota: Se incorpora 'activado' en todas las operaciones.
 // ===========================================================
 
 const db = require('../config/db');
 
 const TipoServicioModel = {
-  // Obtener todos
   async getAll() {
-    const [rows] = await db.query('SELECT * FROM TipoServicio');
+    const [rows] = await db.query(
+      'SELECT id_tipo_servicio, descripcion, activado FROM TipoServicio ORDER BY descripcion'
+    );
     return rows;
   },
 
-  // Obtener por ID
   async getById(id) {
-    const [rows] = await db.query('SELECT * FROM TipoServicio WHERE id_tipo_servicio = ?', [id]);
+    const [rows] = await db.query(
+      'SELECT id_tipo_servicio, descripcion, activado FROM TipoServicio WHERE id_tipo_servicio = ?',
+      [id]
+    );
     return rows[0];
   },
 
-  // Crear nuevo
   async create(data) {
-    const { descripcion } = data;
+    const { descripcion, activado } = data;
     const [result] = await db.query(
-      'INSERT INTO TipoServicio (descripcion) VALUES (?)',
-      [descripcion]
+      'INSERT INTO TipoServicio (descripcion, activado) VALUES (?, COALESCE(?, 1))',
+      [descripcion, activado]
     );
     return result.insertId;
   },
 
-  // Actualizar
   async update(id, data) {
-    const { descripcion } = data;
+    const { descripcion, activado } = data;
     const [result] = await db.query(
-      'UPDATE TipoServicio SET descripcion = ? WHERE id_tipo_servicio = ?',
-      [descripcion, id]
+      'UPDATE TipoServicio SET descripcion = COALESCE(?, descripcion), activado = COALESCE(?, activado) WHERE id_tipo_servicio = ?',
+      [descripcion, activado, id]
     );
     return result.affectedRows > 0;
   },
 
-  // Eliminar
   async delete(id) {
     const [result] = await db.query(
       'DELETE FROM TipoServicio WHERE id_tipo_servicio = ?',

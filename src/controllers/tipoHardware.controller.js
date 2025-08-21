@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/tipoHardware.controller.js
 // Descripción: Lógica del backend para TipoHardware
+// Nota: Soporta 'activado' en create/update y lo devuelve en GET.
 // ===========================================================
 
 const TipoHardware = require('../models/tipoHardware.model');
 
 const TipoHardwareController = {
-  // GET /api/tipohardware → listar todos
   async getAll(req, res) {
     try {
       const lista = await TipoHardware.getAll();
@@ -17,7 +17,6 @@ const TipoHardwareController = {
     }
   },
 
-  // GET /api/tipohardware/:id → obtener por ID
   async getById(req, res) {
     try {
       const id = req.params.id;
@@ -30,11 +29,10 @@ const TipoHardwareController = {
     }
   },
 
-  // POST /api/tipohardware → crear nuevo
   async create(req, res) {
     try {
-      const { descripcion } = req.body;
-      const id = await TipoHardware.create({ descripcion });
+      const { descripcion, activado } = req.body; // <- nuevo
+      const id = await TipoHardware.create({ descripcion, activado });
       res.status(201).json({ mensaje: 'Tipo de hardware creado', id });
     } catch (error) {
       console.error('❌ Error al crear hardware:', error.message);
@@ -42,12 +40,11 @@ const TipoHardwareController = {
     }
   },
 
-  // PUT /api/tipohardware/:id → actualizar existente
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { descripcion } = req.body;
-      const ok = await TipoHardware.update(id, { descripcion });
+      const { descripcion, activado } = req.body; // <- nuevo
+      const ok = await TipoHardware.update(id, { descripcion, activado });
       if (!ok) return res.status(404).json({ mensaje: 'Tipo de hardware no encontrado' });
       res.json({ mensaje: 'Tipo de hardware actualizado' });
     } catch (error) {
@@ -56,7 +53,6 @@ const TipoHardwareController = {
     }
   },
 
-  // DELETE /api/tipohardware/:id → eliminar
   async delete(req, res) {
     try {
       const id = req.params.id;

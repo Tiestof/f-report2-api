@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/cliente.controller.js
 // Descripción: Lógica del backend para Cliente
+// Nota: Ahora se admite 'activado' en create/update. GETs lo devuelven.
 // ===========================================================
 
 const Cliente = require('../models/cliente.model');
 
 const ClienteController = {
-  // GET /api/clientes
   async getAll(req, res) {
     try {
       const lista = await Cliente.getAll();
@@ -17,7 +17,6 @@ const ClienteController = {
     }
   },
 
-  // GET /api/clientes/:rut_cliente
   async getById(req, res) {
     try {
       const rut = req.params.rut_cliente;
@@ -30,10 +29,9 @@ const ClienteController = {
     }
   },
 
-  // POST /api/clientes
   async create(req, res) {
     try {
-      const nuevoCliente = req.body;
+      const nuevoCliente = req.body; // {rut_cliente, nombre_cliente, tipo_cliente, activado?}
       const rut = await Cliente.create(nuevoCliente);
       res.status(201).json({ mensaje: 'Cliente creado', rut_cliente: rut });
     } catch (error) {
@@ -42,11 +40,10 @@ const ClienteController = {
     }
   },
 
-  // PUT /api/clientes/:rut_cliente
   async update(req, res) {
     try {
       const rut = req.params.rut_cliente;
-      const cambios = req.body;
+      const cambios = req.body; // {nombre_cliente?, tipo_cliente?, activado?}
       const ok = await Cliente.update(rut, cambios);
       if (!ok) return res.status(404).json({ mensaje: 'Cliente no encontrado' });
       res.json({ mensaje: 'Cliente actualizado correctamente' });
@@ -56,7 +53,6 @@ const ClienteController = {
     }
   },
 
-  // DELETE /api/clientes/:rut_cliente
   async delete(req, res) {
     try {
       const rut = req.params.rut_cliente;

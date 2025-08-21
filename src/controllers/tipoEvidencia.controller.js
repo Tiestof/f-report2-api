@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/tipoEvidencia.controller.js
 // Descripción: Lógica del backend para TipoEvidencia
+// Nota: Ahora soporta 'activado' en create/update.
 // ===========================================================
 
 const TipoEvidencia = require('../models/tipoEvidencia.model');
 
 const TipoEvidenciaController = {
-  // GET /api/tipoevidencias → obtener todos
   async getAll(req, res) {
     try {
       const lista = await TipoEvidencia.getAll();
@@ -17,7 +17,6 @@ const TipoEvidenciaController = {
     }
   },
 
-  // GET /api/tipoevidencias/:id → obtener uno por ID
   async getById(req, res) {
     try {
       const id = req.params.id;
@@ -30,11 +29,10 @@ const TipoEvidenciaController = {
     }
   },
 
-  // POST /api/tipoevidencias → crear nuevo
   async create(req, res) {
     try {
-      const { descripcion_tipo_evidencia } = req.body;
-      const id = await TipoEvidencia.create({ descripcion_tipo_evidencia });
+      const { descripcion_tipo_evidencia, activado } = req.body;
+      const id = await TipoEvidencia.create({ descripcion_tipo_evidencia, activado });
       res.status(201).json({ mensaje: 'Tipo de evidencia creado', id });
     } catch (error) {
       console.error('❌ Error al crear tipo de evidencia:', error.message);
@@ -42,12 +40,11 @@ const TipoEvidenciaController = {
     }
   },
 
-  // PUT /api/tipoevidencias/:id → actualizar existente
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { descripcion_tipo_evidencia } = req.body;
-      const ok = await TipoEvidencia.update(id, { descripcion_tipo_evidencia });
+      const { descripcion_tipo_evidencia, activado } = req.body;
+      const ok = await TipoEvidencia.update(id, { descripcion_tipo_evidencia, activado });
       if (!ok) return res.status(404).json({ mensaje: 'Tipo de evidencia no encontrado' });
       res.json({ mensaje: 'Tipo de evidencia actualizado' });
     } catch (error) {
@@ -56,7 +53,6 @@ const TipoEvidenciaController = {
     }
   },
 
-  // DELETE /api/tipoevidencias/:id → eliminar
   async delete(req, res) {
     try {
       const id = req.params.id;

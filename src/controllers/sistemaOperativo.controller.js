@@ -1,6 +1,9 @@
 // ===========================================================
 // Archivo: controllers/sistemaOperativo.controller.js
 // Descripción: Lógica del backend para SistemaOperativo
+// Notas:
+//  - Ahora acepta { nombre_sistema, activado } en create/update.
+//  - Las respuestas incluyen 'activado' (el frontend decide el filtrado).
 // ===========================================================
 
 const SistemaOperativo = require('../models/sistemaOperativo.model');
@@ -33,8 +36,8 @@ const SistemaOperativoController = {
   // POST /api/sistemasoperativos
   async create(req, res) {
     try {
-      const { descripcion } = req.body;
-      const id = await SistemaOperativo.create({ descripcion });
+      const { nombre_sistema, activado } = req.body; // <- nuevo
+      const id = await SistemaOperativo.create({ nombre_sistema, activado });
       res.status(201).json({ mensaje: 'Sistema operativo creado', id });
     } catch (error) {
       console.error('❌ Error al crear sistema operativo:', error.message);
@@ -46,8 +49,8 @@ const SistemaOperativoController = {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { descripcion } = req.body;
-      const ok = await SistemaOperativo.update(id, { descripcion });
+      const { nombre_sistema, activado } = req.body; // <- nuevo
+      const ok = await SistemaOperativo.update(id, { nombre_sistema, activado });
       if (!ok) return res.status(404).json({ mensaje: 'Sistema operativo no encontrado' });
       res.json({ mensaje: 'Sistema operativo actualizado' });
     } catch (error) {

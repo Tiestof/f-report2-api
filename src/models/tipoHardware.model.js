@@ -1,46 +1,50 @@
 // ===========================================================
 // Archivo: models/tipoHardware.model.js
 // Descripción: Acceso a BD para tabla TipoHardware
+// Nota: Se incorpora 'activado' en SELECT/INSERT/UPDATE.
 // ===========================================================
 
 const db = require('../config/db');
 
 const TipoHardwareModel = {
-  // Obtener todos los registros
   async getAll() {
-    const [rows] = await db.query('SELECT * FROM TipoHardware');
+    const [rows] = await db.query(
+      'SELECT id_tipo_hardware, descripcion, activado FROM TipoHardware ORDER BY descripcion'
+    );
     return rows;
   },
 
-  // Obtener uno por ID
   async getById(id) {
-    const [rows] = await db.query('SELECT * FROM TipoHardware WHERE id_tipo_hardware = ?', [id]);
+    const [rows] = await db.query(
+      'SELECT id_tipo_hardware, descripcion, activado FROM TipoHardware WHERE id_tipo_hardware = ?',
+      [id]
+    );
     return rows[0];
   },
 
-  // Crear nuevo registro
   async create(data) {
-    const { descripcion } = data;
+    const { descripcion, activado } = data;
     const [result] = await db.query(
-      'INSERT INTO TipoHardware (descripcion) VALUES (?)',
-      [descripcion]
+      'INSERT INTO TipoHardware (descripcion, activado) VALUES (?, COALESCE(?, 1))',
+      [descripcion, activado]
     );
     return result.insertId;
   },
 
-  // Actualizar existente por ID
   async update(id, data) {
-    const { descripcion } = data;
+    const { descripcion, activado } = data;
     const [result] = await db.query(
-      'UPDATE TipoHardware SET descripcion = ? WHERE id_tipo_hardware = ?',
-      [descripcion, id]
+      'UPDATE TipoHardware SET descripcion = COALESCE(?, descripcion), activado = COALESCE(?, activado) WHERE id_tipo_hardware = ?',
+      [descripcion, activado, id]
     );
     return result.affectedRows > 0;
   },
 
-  // Eliminar por ID
   async delete(id) {
-    const [result] = await db.query('DELETE FROM TipoHardware WHERE id_tipo_hardware = ?', [id]);
+    const [result] = await db.query(
+      'DELETE FROM TipoHardware WHERE id_tipo_hardware = ?',
+      [id]
+    );
     return result.affectedRows > 0;
   }
 };

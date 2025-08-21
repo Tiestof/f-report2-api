@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/tipoGasto.controller.js
 // Descripción: Lógica del backend para TipoGasto
+// Nota: Soporta 'activado' en create/update. GETs lo devuelven.
 // ===========================================================
 
 const TipoGasto = require('../models/tipoGasto.model');
 
 const TipoGastoController = {
-  // GET /api/tipogastos → obtener todos
   async getAll(req, res) {
     try {
       const lista = await TipoGasto.getAll();
@@ -17,7 +17,6 @@ const TipoGastoController = {
     }
   },
 
-  // GET /api/tipogastos/:id → obtener por ID
   async getById(req, res) {
     try {
       const id = req.params.id;
@@ -30,11 +29,10 @@ const TipoGastoController = {
     }
   },
 
-  // POST /api/tipogastos → crear nuevo
   async create(req, res) {
     try {
-      const { descripcion } = req.body;
-      const id = await TipoGasto.create({ descripcion });
+      const { descripcion, activado } = req.body;
+      const id = await TipoGasto.create({ descripcion, activado });
       res.status(201).json({ mensaje: 'Tipo de gasto creado', id });
     } catch (error) {
       console.error('❌ Error al crear tipo de gasto:', error.message);
@@ -42,12 +40,11 @@ const TipoGastoController = {
     }
   },
 
-  // PUT /api/tipogastos/:id → actualizar existente
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { descripcion } = req.body;
-      const ok = await TipoGasto.update(id, { descripcion });
+      const { descripcion, activado } = req.body;
+      const ok = await TipoGasto.update(id, { descripcion, activado });
       if (!ok) return res.status(404).json({ mensaje: 'Tipo de gasto no encontrado' });
       res.json({ mensaje: 'Tipo de gasto actualizado' });
     } catch (error) {
@@ -56,7 +53,6 @@ const TipoGastoController = {
     }
   },
 
-  // DELETE /api/tipogastos/:id → eliminar
   async delete(req, res) {
     try {
       const id = req.params.id;

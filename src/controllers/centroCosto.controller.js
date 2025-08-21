@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/centroCosto.controller.js
 // Descripción: Lógica del backend para CentroCosto
+// Nota: Se admite 'activado' en create/update. GETs devuelven 'activado'.
 // ===========================================================
 
 const CentroCosto = require('../models/centroCosto.model');
 
 const CentroCostoController = {
-  // GET /api/centrocostos → obtener todos los registros
   async getAll(req, res) {
     try {
       const lista = await CentroCosto.getAll();
@@ -17,7 +17,6 @@ const CentroCostoController = {
     }
   },
 
-  // GET /api/centrocostos/:id → obtener uno por ID
   async getById(req, res) {
     try {
       const item = await CentroCosto.getById(req.params.id);
@@ -29,10 +28,9 @@ const CentroCostoController = {
     }
   },
 
-  // POST /api/centrocostos → crear nuevo centro de costo
   async create(req, res) {
     try {
-      const nuevo = req.body;
+      const nuevo = req.body; // {id_rut_empresa_cobro, nombre_centro_costo, activado?}
       const id = await CentroCosto.create(nuevo);
       res.status(201).json({ mensaje: 'Centro de costo creado', id_rut_empresa_cobro: id });
     } catch (error) {
@@ -41,11 +39,10 @@ const CentroCostoController = {
     }
   },
 
-  // PUT /api/centrocostos/:id → actualizar centro de costo
   async update(req, res) {
     try {
       const id = req.params.id;
-      const cambios = req.body;
+      const cambios = req.body; // {nombre_centro_costo?, activado?}
       const actualizado = await CentroCosto.update(id, cambios);
       if (!actualizado) return res.status(404).json({ mensaje: 'Centro de costo no encontrado' });
       res.json({ mensaje: 'Centro de costo actualizado correctamente' });
@@ -55,7 +52,6 @@ const CentroCostoController = {
     }
   },
 
-  // DELETE /api/centrocostos/:id → eliminar centro de costo
   async delete(req, res) {
     try {
       const id = req.params.id;

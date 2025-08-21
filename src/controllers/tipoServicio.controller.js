@@ -1,12 +1,12 @@
 // ===========================================================
 // Archivo: controllers/tipoServicio.controller.js
 // Descripción: Lógica del backend para TipoServicio
+// Nota: Soporta 'activado' en create/update. getAll/getById devuelven 'activado'.
 // ===========================================================
 
 const TipoServicio = require('../models/tipoServicio.model');
 
 const TipoServicioController = {
-  // GET /api/tiposervicios
   async getAll(req, res) {
     try {
       const datos = await TipoServicio.getAll();
@@ -17,7 +17,6 @@ const TipoServicioController = {
     }
   },
 
-  // GET /api/tiposervicios/:id
   async getById(req, res) {
     try {
       const id = req.params.id;
@@ -30,11 +29,10 @@ const TipoServicioController = {
     }
   },
 
-  // POST /api/tiposervicios
   async create(req, res) {
     try {
-      const { descripcion } = req.body;
-      const id = await TipoServicio.create({ descripcion });
+      const { descripcion, activado } = req.body; // <- nuevo
+      const id = await TipoServicio.create({ descripcion, activado });
       res.status(201).json({ mensaje: 'Tipo de servicio creado', id });
     } catch (error) {
       console.error('❌ Error al crear tipo de servicio:', error.message);
@@ -42,12 +40,11 @@ const TipoServicioController = {
     }
   },
 
-  // PUT /api/tiposervicios/:id
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { descripcion } = req.body;
-      const ok = await TipoServicio.update(id, { descripcion });
+      const { descripcion, activado } = req.body; // <- nuevo
+      const ok = await TipoServicio.update(id, { descripcion, activado });
       if (!ok) return res.status(404).json({ mensaje: 'Tipo de servicio no encontrado' });
       res.json({ mensaje: 'Tipo de servicio actualizado' });
     } catch (error) {
@@ -56,7 +53,6 @@ const TipoServicioController = {
     }
   },
 
-  // DELETE /api/tiposervicios/:id
   async delete(req, res) {
     try {
       const id = req.params.id;
