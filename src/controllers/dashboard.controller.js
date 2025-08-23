@@ -2,13 +2,12 @@
 // Archivo: controllers/dashboard.controller.js
 // Descripción: Controlador que maneja las consultas para los
 // dashboards de Supervisor y Técnico.
-// Cada método llama a su respectiva función en el modelo
-// Dashboard, manteniendo separación de responsabilidades.
+// Cada método llama a su respectiva función en el modelo Dashboard.
 // ===========================================================
 
 const Dashboard = require('../models/dashboard.model');
 
-// 📊 1. Estados de los reportes con conteo y rango de fechas (Supervisor)
+// 📊 1) Estados de los reportes por rango (Supervisor)
 exports.getEstadoReportes = async (req, res) => {
   try {
     const { fechaInicio, fechaFin } = req.query;
@@ -20,7 +19,7 @@ exports.getEstadoReportes = async (req, res) => {
   }
 };
 
-// 📊 2. Carga de reportes por técnico y por día (Supervisor)
+// 📊 2) Carga de reportes por técnico y por día (Supervisor)
 exports.getCargaReportesTecnico = async (req, res) => {
   try {
     const { fechaInicio, fechaFin } = req.query;
@@ -32,8 +31,32 @@ exports.getCargaReportesTecnico = async (req, res) => {
   }
 };
 
-// 📊 3. Reportes del día actual (Supervisor)
-exports.getReportesHoy = async (req, res) => {
+// ✅ NUEVO: 📊 2b) Carga de reportes por técnico + estado (Supervisor)
+exports.getCargaReportesTecnicoEstado = async (req, res) => {
+  try {
+    let { fechaInicio, fechaFin } = req.query;
+
+    // Defaults: últimos 7 días si no vienen
+    if (!fechaInicio || !fechaFin) {
+      const today = new Date();
+      const fin = today.toISOString().slice(0, 10);
+      const iniDate = new Date();
+      iniDate.setDate(today.getDate() - 6);
+      const ini = iniDate.toISOString().slice(0, 10);
+      fechaInicio = fechaInicio || ini;
+      fechaFin = fechaFin || fin;
+    }
+
+    const data = await Dashboard.getCargaReportesTecnicoEstado(fechaInicio, fechaFin);
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Error en getCargaReportesTecnicoEstado:', err.message);
+    res.status(500).json({ mensaje: 'Error al obtener carga por técnico y estado' });
+  }
+};
+
+// 📊 3) Reportes del día actual (Supervisor)
+exports.getReportesHoy = async (_req, res) => {
   try {
     const data = await Dashboard.getReportesHoy();
     res.json(data);
@@ -43,19 +66,19 @@ exports.getReportesHoy = async (req, res) => {
   }
 };
 
-// 📊 4. Técnicos con asignación y disponibles (Supervisor)
-exports.getTecnicosDisponibles = async (req, res) => {
+// 📊 4) Técnicos asignados vs disponibles (día actual)
+exports.getTecnicosDisponibles = async (_req, res) => {
   try {
     const data = await Dashboard.getTecnicosDisponibles();
     res.json(data);
   } catch (err) {
     console.error('❌ Error en getTecnicosDisponibles:', err.message);
-    res.status(500).json({ mensaje: 'Error al obtener técnicos disponibles' });
+    res.status(500).json({ mensaje: 'Error al obtener técnicos' });
   }
 };
 
-// 📊 5. Reportes por centro de costo (Supervisor)
-exports.getReportesCentroCosto = async (req, res) => {
+// 📊 5) Reportes por centro de costo (Supervisor)
+exports.getReportesCentroCosto = async (_req, res) => {
   try {
     const data = await Dashboard.getReportesCentroCosto();
     res.json(data);
@@ -65,7 +88,7 @@ exports.getReportesCentroCosto = async (req, res) => {
   }
 };
 
-// 📊 6. Reportes asignados del día actual (Técnico)
+// 📊 6) Reportes del día actual por técnico específico (Técnico)
 exports.getReportesTecnicoHoy = async (req, res) => {
   try {
     const { rut } = req.params;
@@ -74,41 +97,5 @@ exports.getReportesTecnicoHoy = async (req, res) => {
   } catch (err) {
     console.error('❌ Error en getReportesTecnicoHoy:', err.message);
     res.status(500).json({ mensaje: 'Error al obtener reportes del técnico' });
-  }
-};
-
-// 📊 7. Historial de reportes del técnico en rango de fechas (Técnico)
-exports.getHistorialTecnico = async (req, res) => {
-  try {
-    const { rut, fechaInicio, fechaFin } = req.query;
-    const data = await Dashboard.getHistorialTecnico(rut, fechaInicio, fechaFin);
-    res.json(data);
-  } catch (err) {
-    console.error('❌ Error en getHistorialTecnico:', err.message);
-    res.status(500).json({ mensaje: 'Error al obtener historial de reportes' });
-  }
-};
-
-// 📊 8. Estados de reportes del técnico (Técnico)
-exports.getEstadoReportesTecnico = async (req, res) => {
-  try {
-    const { rut } = req.params;
-    const data = await Dashboard.getEstadoReportesTecnico(rut);
-    res.json(data);
-  } catch (err) {
-    console.error('❌ Error en getEstadoReportesTecnico:', err.message);
-    res.status(500).json({ mensaje: 'Error al obtener estados de reportes del técnico' });
-  }
-};
-
-// 📊 9. Programación de la semana actual (Técnico)
-exports.getProgramacionSemana = async (req, res) => {
-  try {
-    const { rut } = req.params;
-    const data = await Dashboard.getProgramacionSemana(rut);
-    res.json(data);
-  } catch (err) {
-    console.error('❌ Error en getProgramacionSemana:', err.message);
-    res.status(500).json({ mensaje: 'Error al obtener programación de la semana' });
   }
 };
