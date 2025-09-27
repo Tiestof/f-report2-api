@@ -1,9 +1,14 @@
 // ===========================================================
-// Archivo: routes/evidenciaReporte.routes.js
+// Archivo: src/routes/evidenciaReporte.routes.js
 // Descripción: Rutas para el módulo EvidenciaReporte
+// Notas:
+//  - IMPORTANTE: las rutas relativas van de /routes → ../controllers y ../middleware
+//  - El path de subida es POST /api/evidencias/upload (field: "file")
 // ===========================================================
 const express = require('express');
 const router = express.Router();
+
+// 👇 OJO con las rutas relativas:
 const ctrl = require('../controllers/evidenciaReporte.controller');
 const verifyToken = require('../middleware/verifyToken');
 const { upload } = require('../middleware/upload');

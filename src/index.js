@@ -86,9 +86,6 @@ app.use('/api/evidencias', evidenciaReporteRoutes);
 const auditoriaRoutes = require('./routes/auditoria.routes');
 app.use('/api/auditoria', auditoriaRoutes);
 
-
-
-
 // Rutas para crear primero usuarios Comentar luego de esto por seguuridad
 const setupRoutes = require('./routes/setup.routes');
 app.use('/api/setup', setupRoutes);
