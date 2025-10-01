@@ -54,6 +54,10 @@ app.use('/api/estadoservicios', estadoServicioRoutes);
 const tipoGastoRoutes = require('./routes/tipoGasto.routes');
 app.use('/api/tipogastos', tipoGastoRoutes);
 
+// Rutas consultas para Informes
+const reportesConsultaRoutes = require('./routes/reportesConsulta.routes');
+app.use('/api/reportes', reportesConsultaRoutes);
+
 // Rutas de Gsto Reporte
 const gastoReporteRoutes = require('./routes/gastoReporte.routes');
 app.use('/api/gastos', gastoReporteRoutes);
