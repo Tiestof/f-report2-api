@@ -1,8 +1,9 @@
 // ============================================================
 // Archivo: src/models/gastoReporte.model.js
-// Notas:
-//  - update() ahora usa COALESCE para soporte parcial.
-//  - Se incluye updateImagenUrl() para el flujo de upload.
+// Descripción: Acceso a BD para tabla GastoReporte
+// Cambios:
+//  - update() usa COALESCE para soporte parcial (no pisa valores no provistos).
+//  - updateImagenUrl() para actualizar solo la URL sin tocar otras columnas.
 // ============================================================
 
 const pool = require('../config/db');
@@ -46,6 +47,7 @@ const GastoReporteModel = {
     return result.insertId;
   },
 
+  // Actualización parcial: solo columnas provistas
   async update(id_gasto, data) {
     const {
       id_tipo_gasto = null,
@@ -69,6 +71,7 @@ const GastoReporteModel = {
     return result.affectedRows > 0;
   },
 
+  // Actualiza sólo la URL de imagen
   async updateImagenUrl(id_gasto, imagen_url) {
     const [result] = await pool.query(
       'UPDATE GastoReporte SET imagen_url = ? WHERE id_gasto = ?',

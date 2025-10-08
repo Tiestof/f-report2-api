@@ -1,18 +1,16 @@
 // ============================================================
 // Archivo: src/controllers/gastoReporte.controller.js
 // Descripción: Controlador REST para GastoReporte
-// Cambios clave:
-//  - upload(): luego de renombrar archivo, actualiza SOLO imagen_url,
-//    evitando nulificar otras columnas.
-//  - Se exportan alias compatibles con rutas existentes (getAllGastos, etc.).
+// Claves:
+//  - upload(): crea el gasto con metadatos, renombra el archivo,
+//    y actualiza SOLO imagen_url para evitar nulificar otras columnas.
+//  - Exports con alias compatibles para evitar "handler undefined" en rutas.
 // ============================================================
 
 const path = require('path');
 const fs = require('fs');
 const GastoReporte = require('../models/gastoReporte.model');
-const { UPLOAD_DIR } = require('../middleware/upload');
 
-// GET /api/gastos
 async function list(req, res) {
   try {
     const data = await GastoReporte.getAll();
@@ -23,7 +21,6 @@ async function list(req, res) {
   }
 }
 
-// GET /api/gastos/:id
 async function getById(req, res) {
   try {
     const data = await GastoReporte.getById(req.params.id);
@@ -35,7 +32,6 @@ async function getById(req, res) {
   }
 }
 
-// GET /api/gastos/reporte/:idReporte
 async function getByReporte(req, res) {
   try {
     const data = await GastoReporte.getByReporte(req.params.idReporte);
@@ -46,7 +42,6 @@ async function getByReporte(req, res) {
   }
 }
 
-// POST /api/gastos
 async function create(req, res) {
   try {
     const { id_reporte, id_tipo_gasto, monto, comentario = '', fecha_gasto } = req.body;
@@ -68,7 +63,6 @@ async function create(req, res) {
   }
 }
 
-// PUT /api/gastos/:id
 async function update(req, res) {
   try {
     const ok = await GastoReporte.update(req.params.id, req.body || {});
@@ -80,7 +74,6 @@ async function update(req, res) {
   }
 }
 
-// DELETE /api/gastos/:id
 async function remove(req, res) {
   try {
     const ok = await GastoReporte.delete(req.params.id);
@@ -94,10 +87,10 @@ async function remove(req, res) {
 
 /**
  * POST /api/gastos/upload
- * Campo de archivo: "file" (usa middleware/upload.js)
+ * Requiere: id_reporte, id_tipo_gasto, monto, fecha_gasto (+ comentario opcional) y file
  * Flujo:
  *  1) Crear gasto con metadatos → id_gasto
- *  2) Renombrar archivo a GAS_<reporte>_<id_gasto>_<YYYYMMDDhhmmss>.<ext>
+ *  2) Renombrar archivo a GAS_<idReporte>_<idGasto>_<YYYYMMDDhhmmss>.<ext>
  *  3) Actualizar SOLO imagen_url
  */
 async function upload(req, res) {
@@ -111,7 +104,7 @@ async function upload(req, res) {
       return res.status(400).json({ mensaje: 'Faltan campos obligatorios.' });
     }
 
-    // 1) Crear registro
+    // 1) Crear el gasto con los datos del formulario
     const id_gasto = await GastoReporte.create({
       id_reporte: Number(id_reporte),
       id_tipo_gasto: Number(id_tipo_gasto),
@@ -121,18 +114,13 @@ async function upload(req, res) {
       imagen_url: '',
     });
 
-    // 2) Renombrar archivo
-    const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14); // YYYYMMDDhhmmss
-    const ext =
-      path.extname(req.file.originalname || '') ||
-      path.extname(req.file.filename || '') ||
-      '.bin';
-
+    // 2) Renombrado
+    const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
+    const ext = path.extname(req.file.originalname || req.file.filename || '') || '.bin';
     const baseDir = req.file.destination || path.dirname(req.file.path);
     const oldPath = req.file.path || path.join(baseDir, req.file.filename);
     const finalName = `GAS_${id_reporte}_${id_gasto}_${stamp}${ext}`;
     const newPath = path.join(baseDir, finalName);
-
     fs.renameSync(oldPath, newPath);
 
     const publicUrl = `/uploads/${finalName}`;
@@ -140,20 +128,15 @@ async function upload(req, res) {
     // 3) Solo URL
     await GastoReporte.updateImagenUrl(id_gasto, publicUrl);
 
-    return res.status(201).json({
-      mensaje: 'Gasto subido',
-      id: id_gasto,
-      url: publicUrl,
-    });
+    return res.status(201).json({ mensaje: 'Gasto subido', id: id_gasto, url: publicUrl });
   } catch (err) {
     console.error('Error en upload de gasto:', err);
     res.status(500).json({ mensaje: 'Error al subir archivo de gasto' });
   }
 }
 
-// Export default + alias para compatibilidad con rutas antiguas
 module.exports = {
-  // nombres “nuevos”
+  // principales
   list,
   getById,
   getByReporte,
@@ -161,8 +144,7 @@ module.exports = {
   update,
   delete: remove,
   upload,
-
-  // aliases que algunas rutas antiguas podrían estar usando
+  // alias por compatibilidad (por si en algún sitio se usa el nombre antiguo)
   getAllGastos: list,
   getGastoById: getById,
   getGastosByReporte: getByReporte,

@@ -1,10 +1,7 @@
 // ============================================================
 // Archivo: src/routes/gastoReporte.routes.js
-// Descripción: Rutas para Gastos
-// Notas importantes:
-//  - El orden de rutas importa: poner /reporte/:idReporte ANTES de /:id
-//    para evitar que "reporte" sea capturado como :id.
-//  - Los handlers se toman del controller con alias compatibles.
+// Descripción: Rutas de Gastos
+// Importante: Orden de rutas y middleware de upload
 // ============================================================
 
 const express = require('express');
@@ -15,7 +12,7 @@ const ctrl = require('../controllers/gastoReporte.controller');
 // GET /api/gastos
 router.get('/', ctrl.list);
 
-// GET /api/gastos/reporte/:idReporte  (debe ir ANTES de /:id)
+// GET /api/gastos/reporte/:idReporte (antes de /:id para evitar colisiones)
 router.get('/reporte/:idReporte', ctrl.getByReporte);
 
 // GET /api/gastos/:id
@@ -30,7 +27,7 @@ router.put('/:id', ctrl.update);
 // DELETE /api/gastos/:id
 router.delete('/:id', ctrl.delete);
 
-// POST /api/gastos/upload  (middleware de archivo -> controller)
+// POST /api/gastos/upload (multer primero, luego handler)
 router.post('/upload', upload.single('file'), ctrl.upload);
 
 module.exports = router;
