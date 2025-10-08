@@ -1,28 +1,36 @@
-// ===========================================================
-// Archivo: gastoReporte.routes.js
-// Descripción: Rutas para módulo de GastoReporte
-// ===========================================================
+// ============================================================
+// Archivo: src/routes/gastoReporte.routes.js
+// Descripción: Rutas para Gastos
+// Notas importantes:
+//  - El orden de rutas importa: poner /reporte/:idReporte ANTES de /:id
+//    para evitar que "reporte" sea capturado como :id.
+//  - Los handlers se toman del controller con alias compatibles.
+// ============================================================
 
 const express = require('express');
 const router = express.Router();
-
+const { upload } = require('../middleware/upload');
 const ctrl = require('../controllers/gastoReporte.controller');
-const verifyToken = require('../middleware/verifyToken');
-const { upload } = require('../middleware/upload'); // mismo middleware que Evidencias
 
-// Rutas protegidas por token (sin restricción de rol)
-router.get('/', verifyToken([]), ctrl.getAll);
+// GET /api/gastos
+router.get('/', ctrl.list);
 
-// IMPORTANTE: rutas específicas ANTES de '/:id'
-router.get('/reporte/:id_reporte', verifyToken([]), ctrl.getByReporte);
-router.get('/:id', verifyToken([]), ctrl.getById);
+// GET /api/gastos/reporte/:idReporte  (debe ir ANTES de /:id)
+router.get('/reporte/:idReporte', ctrl.getByReporte);
 
-// CRUD
-router.post('/', verifyToken([]), ctrl.create);
-router.put('/:id', verifyToken([]), ctrl.update);
-router.delete('/:id', verifyToken([]), ctrl.delete);
+// GET /api/gastos/:id
+router.get('/:id', ctrl.getById);
 
-// ✅ Subida de archivo (campo 'file') → POST /api/gastos/upload
-router.post('/upload', verifyToken([]), upload.single('file'), ctrl.upload);
+// POST /api/gastos
+router.post('/', ctrl.create);
+
+// PUT /api/gastos/:id
+router.put('/:id', ctrl.update);
+
+// DELETE /api/gastos/:id
+router.delete('/:id', ctrl.delete);
+
+// POST /api/gastos/upload  (middleware de archivo -> controller)
+router.post('/upload', upload.single('file'), ctrl.upload);
 
 module.exports = router;
